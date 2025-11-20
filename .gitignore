@@ -1,1 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.env.local
+.vscode/
+*.log
+tmp/
+node_modules/
+playwright/
 

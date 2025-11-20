@@ -5,3 +5,4 @@ pandas
 pydantic
 python-dotenv
 playwright
+pdfplumber==0.11.0

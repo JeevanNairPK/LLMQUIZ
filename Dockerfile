@@ -1,13 +1,16 @@
-# Dockerfile — use exact tag (no leading "v")
-FROM mcr.microsoft.com/playwright/python:1.56.0-jammy
+FROM mcr.microsoft.com/playwright/python:jammy
 
 WORKDIR /app
 
-# install python deps
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# Install system deps needed for python-magic (optional)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libmagic1 && \
+    rm -rf /var/lib/apt/lists/*
 
-# ensure browsers are installed (safe even if image already has them)
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Playwright browsers (Chromium, Firefox, WebKit)
 RUN python -m playwright install --with-deps
 
 COPY . /app

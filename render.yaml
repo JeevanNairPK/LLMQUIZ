@@ -1,1 +1,13 @@
 
+---
+
+### `render.yaml` (optional)
+```yaml
+services:
+  - type: web
+    name: lllm-analysis-quiz-solver
+    env: docker
+    repo: <your-github-repo>
+    plan: starter
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+

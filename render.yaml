@@ -2,6 +2,6 @@ services:
   - type: web
     name: lllm-analysis-quiz-solver
     env: docker
-    repo: https://github.com/<your-username>/LLMQUIZ
+    repo: https://github.com/JeevanNairPK/LLMQUIZ
     plan: starter
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT

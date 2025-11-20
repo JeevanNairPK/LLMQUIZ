@@ -1,19 +1,20 @@
-import mimetypes
-try:
-    import magic as _magic_lib
-except Exception:
-    _magic_lib = None
+# Use the Playwright Python image (includes browsers)
+FROM mcr.microsoft.com/playwright/python:latest
 
-def detect_mime(path_or_bytes, filename=None):
-    # If python-magic available, use it
-    if _magic_lib:
-        if isinstance(path_or_bytes, (str,)):
-            return _magic_lib.from_file(path_or_bytes, mime=True)
-        else:
-            # bytes: use from_buffer
-            return _magic_lib.from_buffer(path_or_bytes, mime=True)
-    # Fallback: use filename extension
-    if filename:
-        mime, _ = mimetypes.guess_type(filename)
-        return mime or "application/octet-stream"
-    return "application/octet-stream"
+WORKDIR /app
+
+# Install libmagic (for python-magic) and keep image small
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libmagic1 file \
+ && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python deps
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy app source
+COPY . /app
+
+# Ensure PORT env var is used by the server
+ENV PORT=8000
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]

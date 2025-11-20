@@ -1,20 +1,15 @@
-# Use the Playwright Python image (includes browsers)
-FROM mcr.microsoft.com/playwright/python:v1.56.0-jammy
+# Dockerfile — use exact tag (no leading "v")
+FROM mcr.microsoft.com/playwright/python:1.56.0-jammy
 
 WORKDIR /app
 
-# Install libmagic (for python-magic) and keep image small
-RUN apt-get update \
- && apt-get install -y --no-install-recommends libmagic1 file \
- && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements and install Python deps
+# install python deps
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Copy app source
+# ensure browsers are installed (safe even if image already has them)
+RUN python -m playwright install --with-deps
+
 COPY . /app
 
-# Ensure PORT env var is used by the server
-ENV PORT=8000
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
